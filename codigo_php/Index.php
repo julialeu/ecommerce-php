@@ -8,6 +8,7 @@
 <body>
 
 <?php
+
 $methodName = $_SERVER['REQUEST_METHOD'];
 
 if ($methodName === 'POST') {
@@ -36,6 +37,7 @@ if ($methodName === 'POST') {
 <?php
 if (isset($isValidAccess) && $isValidAccess === true) {
     echo "<p>Bienvenid@ $username, pulsa <a href=\"Acceso.php\">AQUÍ</a> para continuar.</p>";
+
 }
 
 if (isset($isValidAccess) && $isValidAccess === false) {
