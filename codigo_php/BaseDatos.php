@@ -123,17 +123,23 @@ function getUserFromSession(): User
 /**
  * @return Product[]
  */
-function getProductListData(int $pageNumber): array
+function getProductListData(int $pageNumber, string $orderBy): array
 {
     $limit = Product::NUM_PRODUCTS_PER_PAGE;
     $offset = ($limit * $pageNumber) - $limit;
 
-    $sql = "SELECT product.*, category.Name as CategoryName
+    $sql = 'SELECT product.*, category.Name as CategoryName
                 FROM `product`
-                left join category on product.CategoryID = category.CategoryID
-                limit " .  $limit . "
+                left join category on product.CategoryID = category.CategoryID';
+
+    if ($orderBy === 'CategoryAsc') {
+        $sql = $sql . ' order by category.name asc ';
+    }
+
+    $sql = $sql . " limit " . $limit . "
                 OFFSET " . $offset;
 
+//    var_dump($sql);die;
     $DB = createConnectionDataBase("pac3_daw");
     $result = mysqli_query($DB, $sql);
     $products = [];
@@ -162,13 +168,13 @@ function getProductListData(int $pageNumber): array
     return $products;
 }
 
- function numTotalProducts(): int
- {
-     $DB = createConnectionDataBase("pac3_daw");
-     $sql = "SELECT COUNT(ProductID) as numTotalProducts FROM product";
-     $result = mysqli_query($DB, $sql);
-     $row = $result->fetch_assoc();
+function numTotalProducts(): int
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "SELECT COUNT(ProductID) as numTotalProducts FROM product";
+    $result = mysqli_query($DB, $sql);
+    $row = $result->fetch_assoc();
 
-     return (int)$row['numTotalProducts'];
- }
+    return (int)$row['numTotalProducts'];
+}
 

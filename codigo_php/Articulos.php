@@ -16,15 +16,44 @@ if (isset($_GET['page'])) {
     $pageNumber = 1;
 }
 
-$productList = getProductListData($pageNumber);
+if (isset($_GET['orderBy'])) {
+    // Puede ser: CategoryAsc, CategoryDesc
+    $orderBy = $_GET['orderBy'];
+} else {
+    $orderBy = '';
+}
+
+$productList = getProductListData($pageNumber, $orderBy);
 
 ?>
+
+<?php
+$user = getUserFromSession();
+
+$role = getRol($user);
+
+if ($role === User::ROLE_SUPERADMIN || $role === User::ROLE_AUTHORIZED) {
+
+    echo "<a href=\"formArticulos.php\">
+    Crear nuevo producto</a>" . "<br>";
+
+}
+
+if (empty($orderBy)) {
+    $categoryUrl = "Articulos.php?page=$pageNumber&orderBy=CategoryAsc";
+} else {
+    $categoryUrl = "Articulos.php?page=$pageNumber&orderBy=CategoryDesc";
+}
+
+// TODO: Fill in this URL
+$nameUrl = '';
+    ?>
 
 <table>
     <tr>
         <th>ID</th>
-        <th>Categoría</th>
-        <th>Nombre</th>
+        <th><a href="<?php echo($categoryUrl); ?>">Categoría</a></th>
+        <th><a href="<?php echo($nameUrl); ?>">Nombre</th>
         <th>Coste</th>
         <th>Precio</th>
         <th>Manejo</th>
@@ -51,8 +80,16 @@ $productList = getProductListData($pageNumber);
 
 <?php
 
-if ($pageNumber > 1) { ?>
-    <a href="/pac_desarrollo_servidor/codigo_php/Articulos.php?page=<?php echo($pageNumber - 1) ?>">
+if ($pageNumber > 1) {
+
+    $previousUrl = '?page=' . ($pageNumber - 1);
+
+    if (!empty($orderBy)) {
+        $previousUrl = $previousUrl . '&orderBy=' . $orderBy;
+    }
+    ?>
+
+    <a href="<?php echo $previousUrl ?>">
         Anterior </a>
 <?php } ?>
 
@@ -61,9 +98,16 @@ $numTotalProducts = numTotalProducts();
 $lastPageNumber = ceil($numTotalProducts / Product::NUM_PRODUCTS_PER_PAGE);
 
 
-if ($pageNumber < $lastPageNumber) { ?>
+if ($pageNumber < $lastPageNumber) {
 
-    <a href="/pac_desarrollo_servidor/codigo_php/Articulos.php?page=<?php echo($pageNumber + 1) ?>">
+    $nextUrl = '?page=' . ($pageNumber + 1);
+
+    if (!empty($orderBy)) {
+        $nextUrl = $nextUrl . '&orderBy=' . $orderBy;
+    }
+    ?>
+
+    <a href="<?php echo $nextUrl ?>">
         Siguiente</a>
 
 <?php } ?>
