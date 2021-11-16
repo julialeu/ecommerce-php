@@ -2,6 +2,7 @@
 
 include 'Entity/User.php';
 include 'Entity/Product.php';
+include 'Entity/Category.php';
 
 
 function login($username, $email)
@@ -136,10 +137,19 @@ function getProductListData(int $pageNumber, string $orderBy): array
         $sql = $sql . ' order by category.name asc ';
     }
 
+    if ($orderBy === 'CategoryDesc') {
+        $sql = $sql . ' order by category.name desc ';
+
+    }
+
+    if ($orderBy === 'NameAsc') {
+        $sql = $sql . ' order by product.name asc ';
+    }
+
     $sql = $sql . " limit " . $limit . "
                 OFFSET " . $offset;
 
-//    var_dump($sql);die;
+    //var_dump($sql);die;
     $DB = createConnectionDataBase("pac3_daw");
     $result = mysqli_query($DB, $sql);
     $products = [];
@@ -176,5 +186,36 @@ function numTotalProducts(): int
     $row = $result->fetch_assoc();
 
     return (int)$row['numTotalProducts'];
+}
+
+/**
+ * @return Category[]
+ */
+function showCategoryList(): array
+{
+
+    $sql = 'SELECT * 
+                FROM `category`';
+
+    $DB = createConnectionDataBase("pac3_daw");
+    $result = mysqli_query($DB, $sql);
+    $categories = [];
+
+    foreach ($result as $row) {
+
+        $categoryId = $row["CategoryID"];
+        $name = $row["Name"];
+
+        $category = new Category(
+            $categoryId,
+            $name
+        );
+
+        $categories[] = $category;
+    }
+
+    return $categories;
+
+
 }
 

@@ -9,7 +9,6 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($
     exit();
 }
 
-// TODO: si no llega el parámetro page, poner pageNumber a 1
 if (isset($_GET['page'])) {
     $pageNumber = (int)$_GET['page'];
 } else {
@@ -34,29 +33,40 @@ $role = getRol($user);
 
 if ($role === User::ROLE_SUPERADMIN || $role === User::ROLE_AUTHORIZED) {
 
+
     echo "<a href=\"formArticulos.php\">
-    Crear nuevo producto</a>" . "<br>";
+    Crear nuevo producto</a>" . "<br><br>";
 
 }
 
-if (empty($orderBy)) {
-    $categoryUrl = "Articulos.php?page=$pageNumber&orderBy=CategoryAsc";
+if ($orderBy === 'CategoryAsc') {
+    $categoryUrl = "Articulos.php?page=1&orderBy=CategoryDesc";
 } else {
-    $categoryUrl = "Articulos.php?page=$pageNumber&orderBy=CategoryDesc";
+    $categoryUrl = "Articulos.php?page=1&orderBy=CategoryAsc";
 }
 
-// TODO: Fill in this URL
-$nameUrl = '';
-    ?>
+if ($orderBy === 'NameAsc') {
+    $nameUrl = "Articulos.php?page=1&orderBy=NameDesc";
+} else {
+    $nameUrl = "Articulos.php?page=1&orderBy=NameAsc";
+}
+
+?>
 
 <table>
     <tr>
         <th>ID</th>
         <th><a href="<?php echo($categoryUrl); ?>">Categoría</a></th>
         <th><a href="<?php echo($nameUrl); ?>">Nombre</th>
-        <th>Coste</th>
+
+        <?if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
+            <th>Coste</th>
+        <?php } ?>
+
         <th>Precio</th>
-        <th>Manejo</th>
+        <?if ($role === User::ROLE_SUPERADMIN) { ?>
+            <th>Manejo</th>
+        <?php } ?>
     </tr>
 
     <?php
@@ -67,9 +77,14 @@ $nameUrl = '';
             <td> <?php echo $product->productId() ?></td>
             <td> <?php echo $product->categoryName() ?></td>
             <td> <?php echo $product->name() ?></td>
-            <td> <?php echo $product->cost() ?></td>
+            <?if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
+                <td> <?php echo $product->cost() ?></td>
+            <?php } ?>
+
             <td> <?php echo $product->price() ?></td>
-            <td> Lápiz, cruz</td>
+            <?if ($role === User::ROLE_SUPERADMIN) { ?>
+                <td> Lápiz, cruz</td>
+            <?php } ?>
         </tr>
         <?php
     };
@@ -77,6 +92,7 @@ $nameUrl = '';
 
 </table>
 
+<br>
 
 <?php
 
