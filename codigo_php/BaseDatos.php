@@ -215,7 +215,14 @@ function showCategoryList(): array
     }
 
     return $categories;
+}
 
+function addProductToList($productName, $cost, $price, $categoryId): void
+{
+    $sql = 'INSERT INTO product (Name, Cost, Price, CategoryID)
+            VALUES (\'' . $productName . '\',' . $cost . ',' . $price . ',' . $categoryId . ')';
 
+    $DB = createConnectionDataBase("pac3_daw");
+    $result = mysqli_query($DB, $sql);
 }
 
