@@ -13,7 +13,7 @@ $methodName = $_SERVER['REQUEST_METHOD'];
 
 $productCreated = false;
 if ($methodName === 'POST') {
-
+    // Create the product
     $productName = $_POST["name"];
     $cost = $_POST["cost"];
     $price = $_POST["price"];
@@ -21,9 +21,15 @@ if ($methodName === 'POST') {
 
     addProductToList($productName, $cost, $price, $categoryId);
     $productCreated = true;
-
 }
-//      Se ha creado el producto
+
+// Aquí falla al crear nuevo producto
+$productId = intval($_GET["productId"]);
+//var_dump($productId);
+
+$product = getProductById($productId);
+var_dump($product);
+
 
 ?>
 
@@ -33,7 +39,7 @@ if (!$productCreated) { ?>
 
     <form method="post">
         <label for="id">ID:</label>
-        <input type="number" id="id" name="id"><br>
+        <input type="number" id="id" name="id" value="<?php echo $product->productId() ?>"><br>
         <label for="category">Categoría:</label>
         <select name="categoryId">
             <?php

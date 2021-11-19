@@ -113,6 +113,7 @@ function getUserFromSession(): User
         throw new \Exception('User with id ' . $userId . ' not found');
     }
     $row = $result->fetch_assoc();
+
     $id = $row['UserID'];
     $email = $row['Email'];
     $username = $row['FullName'];
@@ -126,6 +127,7 @@ function getUserFromSession(): User
  */
 function getProductListData(int $pageNumber, string $orderBy): array
 {
+    $DB = createConnectionDataBase("pac3_daw");
     $limit = Product::NUM_PRODUCTS_PER_PAGE;
     $offset = ($limit * $pageNumber) - $limit;
 
@@ -149,8 +151,6 @@ function getProductListData(int $pageNumber, string $orderBy): array
     $sql = $sql . " limit " . $limit . "
                 OFFSET " . $offset;
 
-    //var_dump($sql);die;
-    $DB = createConnectionDataBase("pac3_daw");
     $result = mysqli_query($DB, $sql);
     $products = [];
 
@@ -194,10 +194,9 @@ function numTotalProducts(): int
 function showCategoryList(): array
 {
 
+    $DB = createConnectionDataBase("pac3_daw");
     $sql = 'SELECT * 
                 FROM `category`';
-
-    $DB = createConnectionDataBase("pac3_daw");
     $result = mysqli_query($DB, $sql);
     $categories = [];
 
@@ -219,10 +218,45 @@ function showCategoryList(): array
 
 function addProductToList($productName, $cost, $price, $categoryId): void
 {
+    $DB = createConnectionDataBase("pac3_daw");
     $sql = 'INSERT INTO product (Name, Cost, Price, CategoryID)
             VALUES (\'' . $productName . '\',' . $cost . ',' . $price . ',' . $categoryId . ')';
 
-    $DB = createConnectionDataBase("pac3_daw");
     $result = mysqli_query($DB, $sql);
 }
 
+function updateDataProduct ($productId, $productName, $cost, $price, $categoryId):void
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = 'UPDATE product SET Name = "$productName", Cost = $cost, Price = $price, CategoryID = $categoryId WHERE ProductID = $productId;';
+}
+
+// UPDATE product SET Name = "rebeca", Cost = 20.25, Price = 40, CategoryID = 2 WHERE ProductID = 55;
+
+function getProductById($productId): Product
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "SELECT * FROM product WHERE ProductID = $productId";
+    $result = mysqli_query($DB, $sql);
+//    var_dump($sql);
+//    var_dump($result);
+
+    $row = $result->fetch_assoc();
+//    var_dump($row);
+
+    $productId = $row["ProductID"];
+    $name = $row["Name"];
+    $cost = $row["Cost"];
+    $price = $row["Price"];
+    $categoryId = $row["CategoryID"];
+    $categoryName = '';
+
+    return new Product(
+        $productId,
+        $name,
+        $cost,
+        $price,
+        $categoryId,
+        $categoryName
+    );
+}

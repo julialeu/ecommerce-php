@@ -83,7 +83,7 @@ if ($orderBy === 'NameAsc') {
 
             <td> <?php echo $product->price() ?></td>
             <?if ($role === User::ROLE_SUPERADMIN) { ?>
-                <td> Lápiz, cruz</td>
+                <td> <a href="formArticulos.php?productId=<?php echo $product->productId() ?>">✏️</a>  &nbsp; <a href="formArticulos.php">❌</a></td>
             <?php } ?>
         </tr>
         <?php
@@ -92,6 +92,9 @@ if ($orderBy === 'NameAsc') {
 
 </table>
 
+hola <?php $foo = 'bar;' ?>
+
+<?php echo $foo ?>
 <br>
 
 <?php
