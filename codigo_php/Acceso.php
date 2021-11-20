@@ -22,7 +22,7 @@ if($role === User::ROLE_SUPERADMIN || $role === User::ROLE_AUTHORIZED || user::R
 
 if($role === User::ROLE_SUPERADMIN){
 
-    echo "<a href=\"usuarios.php\">Usuarios</a>"."<br>";
+    echo "<a href=\"Usuarios.php\">Usuarios</a>"."<br>";
 }
 
     echo "<a href=\"Index.php\">Volver</a>"."<br>";

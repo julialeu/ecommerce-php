@@ -11,32 +11,27 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($
 
 $operation = $_GET['operation'];
 
-if ($operation === 'create') {
-    echo ('<h1>Crear producto</h1>');
+switch ($operation) {
+    case 'create':
+        echo('<h1>Crear producto</h1>');
+        break;
+    case 'edit':
+        echo('<h1>Editar producto</h1>');
+        break;
+    case 'delete':
+        echo('<h1>Eliminar producto</h1>');
+        break;
 }
-
-if ($operation === 'edit') {
-    echo ('<h1>Editar producto</h1>');
-}
-
-if ($operation === 'delete') {
-    echo ('<h1>Eliminar producto</h1>');
-}
-
-var_dump($operation);
 
 $methodName = $_SERVER['REQUEST_METHOD'];
 
-echo ($methodName);
+echo('Método: ' . $methodName . '<br><br>');
 
 $productCreated = false;
+$productEdited = false;
 
-echo ('debug 1');
-var_dump($methodName);
 if ($methodName === 'POST') {
-    echo ('debug 2');
     if ($operation === 'create') {
-        echo ('debug 3');
         // Create the product
         $productName = $_POST["name"];
         $cost = $_POST["cost"];
@@ -46,67 +41,124 @@ if ($methodName === 'POST') {
         createProduct($productName, $cost, $price, $categoryId);
         $productCreated = true;
     }
+
+    if ($operation === 'edit') {
+        // Edit the product
+        $productId = $_POST["productId"];
+        $productName = $_POST["name"];
+        $cost = $_POST["cost"];
+        $price = $_POST["price"];
+        $categoryId = $_POST["categoryId"];
+
+        $productToEdit = new Product(
+            $productId,
+            $productName,
+            $cost,
+            $price,
+            $categoryId,
+            ''
+        );
+
+        editProduct($productToEdit);
+        $productEdited = true;
+    }
 }
 
-if ($methodName === 'GET' && $operation === 'edit') {
+if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
     $productId = intval($_GET["productId"]);
     $product = getProductById($productId);
-
 }
 
 ?>
 
 <?php
-//var_dump($product);
 
-if (!$productCreated) { ?>
+if ($methodName === 'GET') { ?>
 
-<form method="post">
-    <label for="id">ID:</label>
-    <input type="number" id="id" name="id" value="<?php if (isset($product)) { echo $product->productId(); } ?>"><br>
-    <label for="category">Categoría:</label>
-    <select name="categoryId">
-        <?php
-        $categoryList = showCategoryList();
-
-        foreach ($categoryList as $category) {
-            ?>
-            <option <?php if (isset($product) && $product->categoryId() === $category->categorytId()) { echo 'selected="selected"'; } ?> value="<?= $category->categorytId() ?>"><?php echo $category->name() ?></option>
-
+    <form method="post">
+        <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
+            <label for="id">ID:</label>
+            <input type="number" id="id" name="productId" readonly="readonly" value="<?php if (isset($product)) {
+                echo $product->productId();
+            } ?>"><br>
         <?php } ?>
 
-    </select>
-    <br>
-    <label for="name">Nombre:</label>
-    <input type="text" id="name" name="name" value="<?php if (isset($product)) { echo $product->name(); } ?>"><br>
-    <label for="cost" >Coste:</label>
-    <input type="number" id="cost" name="cost" value="<?php if (isset($product)) { echo $product->cost(); } ?>"><br>
-    <label for="price">Precio:</label>
-    <input type="number" id="price" name="price" value="<?php if (isset($product)) { echo $product->price(); } ?>"><br>
+        <label for="category">Categoría:</label>
+        <select name="categoryId">
+            <?php
+            $categoryList = showCategoryList();
 
-    <br>
+            foreach ($categoryList as $category) {
+                ?>
+                <option <?php if (isset($product) && $product->categoryId() === $category->categorytId()) {
+                    echo 'selected="selected"';
+                } ?> value="<?= $category->categorytId() ?>"><?php echo $category->name() ?></option>
 
-    <button type="submit" name="add" value="add">
+            <?php } ?>
 
-        <?php if ($operation === 'create') { ?>
-            Añadir
-        <?php } ?>
+        </select>
+        <br>
+        <label for="name">Nombre:</label>
+        <input
+                type="text"
+                id="name"
+                name="name"
+                value="<?php if (isset($product)) {
+                    echo $product->name();
+                } ?>"
+            <?php if ($operation === 'delete') { ?>
+                readonly="readonly";
+            <?php } ?>
+        >
+        <br>
+        <label for="cost">Coste:</label>
+        <input id="cost" name="cost" value="<?php if (isset($product)) {
+            echo $product->cost();
+        } ?>">
+        <br>
+        <label for="price">Precio:</label>
+        <input id="price" name="price" value="<?php if (isset($product)) {
+            echo $product->price();
+        } ?>">
+        <br>
 
-        <?php if ($operation === 'edit') { ?>
-            Editar
-        <?php } ?>
+        <br>
 
-        <?php if ($operation === 'delete') { ?>
-            Eliminar
-        <?php } ?>
+        <button type="submit" name="add" value="add">
+
+            <?php if ($operation === 'create') { ?>
+                Añadir
+            <?php } ?>
+
+            <?php if ($operation === 'edit') { ?>
+                Editar
+            <?php } ?>
+
+            <?php if ($operation === 'delete') { ?>
+                Eliminar
+            <?php } ?>
 
 
+        </button>
+    </form>
 
-    </button>
-</form>
+<?php } ?>
+
+
+<?php if ($productCreated) {
+    echo('Producto creado!');
+}
+
+if ($productEdited) {
+    echo('Producto editado!');
+}
+
+?>
 
 <br>
+<br>
+<br>
 
-<a href="Articulos.php"><< Volver</a>
+<a href="Articulos.php">Volver</a>
 
 

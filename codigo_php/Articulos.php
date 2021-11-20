@@ -59,12 +59,12 @@ if ($orderBy === 'NameAsc') {
         <th><a href="<?php echo($categoryUrl); ?>">Categoría</a></th>
         <th><a href="<?php echo($nameUrl); ?>">Nombre</th>
 
-        <?if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
+        <? if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
             <th>Coste</th>
         <?php } ?>
 
         <th>Precio</th>
-        <?if ($role === User::ROLE_SUPERADMIN) { ?>
+        <? if ($role === User::ROLE_SUPERADMIN) { ?>
             <th>Manejo</th>
         <?php } ?>
     </tr>
@@ -77,13 +77,16 @@ if ($orderBy === 'NameAsc') {
             <td> <?php echo $product->productId() ?></td>
             <td> <?php echo $product->categoryName() ?></td>
             <td> <?php echo $product->name() ?></td>
-            <?if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
+            <? if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
                 <td> <?php echo $product->cost() ?></td>
             <?php } ?>
 
             <td> <?php echo $product->price() ?></td>
-            <?if ($role === User::ROLE_SUPERADMIN) { ?>
-                <td> <a href="formArticulos.php?operation=edit&productId=<?php echo $product->productId() ?>">✏️</a>  &nbsp; <a href="formArticulos.php">❌</a></td>
+            <? if ($role === User::ROLE_SUPERADMIN) { ?>
+                <td>
+                    <a href="formArticulos.php?operation=edit&productId=<?php echo $product->productId() ?>">✏️</a>
+                    &nbsp<a href="formArticulos.php?operation=delete&productId=<?php echo $product->productId() ?>">❌</a>
+                </td>
             <?php } ?>
         </tr>
         <?php
@@ -92,9 +95,6 @@ if ($orderBy === 'NameAsc') {
 
 </table>
 
-hola <?php $foo = 'bar;' ?>
-
-<?php echo $foo ?>
 <br>
 
 <?php

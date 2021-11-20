@@ -39,8 +39,10 @@ function findUser($username, $email): ?User
         $email = $row['Email'];
         $username = $row['FullName'];
         $enabled = (bool)$row['Enabled'];
+        $lastAccess = new DateTime($row["LastAccess"]);
 
-        $user = new User($id, $email, $username, $enabled);
+
+        $user = new User($id, $email, $username, $enabled, $lastAccess);
 
         return $user;
     }
@@ -50,7 +52,6 @@ function findUser($username, $email): ?User
 
 function createConnectionDataBase($database)
 {
-
     // Datos de conexión
     $host = "localhost";
     $user = "root";
@@ -118,8 +119,9 @@ function getUserFromSession(): User
     $email = $row['Email'];
     $username = $row['FullName'];
     $enabled = (bool)$row['Enabled'];
+    $lastAccess = new DateTime($row["LastAccess"]);
 
-    return new User($id, $email, $username, $enabled);
+    return new User($id, $email, $username, $enabled, $lastAccess);
 }
 
 /**
@@ -225,14 +227,6 @@ function createProduct($productName, $cost, $price, $categoryId): void
     $result = mysqli_query($DB, $sql);
 }
 
-function updateDataProduct ($productId, $productName, $cost, $price, $categoryId):void
-{
-    $DB = createConnectionDataBase("pac3_daw");
-    $sql = 'UPDATE product SET Name = "$productName", Cost = $cost, Price = $price, CategoryID = $categoryId WHERE ProductID = $productId;';
-}
-
-// UPDATE product SET Name = "rebeca", Cost = 20.25, Price = 40, CategoryID = 2 WHERE ProductID = 55;
-
 function getProductById($productId): Product
 {
     $DB = createConnectionDataBase("pac3_daw");
@@ -259,4 +253,50 @@ function getProductById($productId): Product
         $categoryId,
         $categoryName
     );
+}
+
+/**
+ * @return User[]
+ */
+function getUserList(): array
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "SELECT * FROM user";
+    $result = mysqli_query($DB, $sql);
+
+    $users = [];
+
+    foreach ($result as $row) {
+        $id = $row["UserID"];
+        $username = $row["FullName"];
+        $email = $row["Email"];
+        $lastAccess = new DateTime($row["LastAccess"]);
+        $enabled = $row["Enabled"];
+
+        $user = new User(
+            $id,
+            $email,
+            $username,
+            $enabled,
+            $lastAccess
+        );
+
+        $users[] = $user;
+    }
+
+    return $users;
+}
+
+function editProduct(Product $productToEdit): void
+{
+    $productName = $productToEdit->name();
+    $cost = $productToEdit->cost();
+    $price = $productToEdit->price();
+    $categoryId = $productToEdit->categoryId();
+    $productId = $productToEdit->productId();
+
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "UPDATE product SET Name = '$productName', Cost = $cost, Price = $price, CategoryID = $categoryId WHERE ProductID = $productId";
+    var_dump($sql);
+    $result = mysqli_query($DB, $sql);
 }

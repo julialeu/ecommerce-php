@@ -10,13 +10,16 @@ class User
     private string $email;
     private string $username;
     private bool $enabled;
+    private DateTime $lastAccess;
 
-    public function __construct(int $id, string $email, string $username, bool $enabled)
+    public function __construct(int $id, string $email, string $username, bool $enabled, DateTime $lastAccess)
     {
         $this->id = $id;
         $this->email = $email;
         $this->username = $username;
         $this->enabled = $enabled;
+        $this->lastAccess = $lastAccess;
+
     }
 
     public function id(): int
@@ -37,5 +40,10 @@ class User
     public function enabled(): bool
     {
         return $this->enabled;
+    }
+
+    public function lastAccess(): DateTime
+    {
+        return $this->lastAccess;
     }
 }
