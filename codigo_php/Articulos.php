@@ -34,7 +34,7 @@ $role = getRol($user);
 if ($role === User::ROLE_SUPERADMIN || $role === User::ROLE_AUTHORIZED) {
 
 
-    echo "<a href=\"formArticulos.php\">
+    echo "<a href=\"formArticulos.php?operation=create\">
     Crear nuevo producto</a>" . "<br><br>";
 
 }
@@ -83,7 +83,7 @@ if ($orderBy === 'NameAsc') {
 
             <td> <?php echo $product->price() ?></td>
             <?if ($role === User::ROLE_SUPERADMIN) { ?>
-                <td> <a href="formArticulos.php?productId=<?php echo $product->productId() ?>">✏️</a>  &nbsp; <a href="formArticulos.php">❌</a></td>
+                <td> <a href="formArticulos.php?operation=edit&productId=<?php echo $product->productId() ?>">✏️</a>  &nbsp; <a href="formArticulos.php">❌</a></td>
             <?php } ?>
         </tr>
         <?php

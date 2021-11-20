@@ -216,7 +216,7 @@ function showCategoryList(): array
     return $categories;
 }
 
-function addProductToList($productName, $cost, $price, $categoryId): void
+function createProduct($productName, $cost, $price, $categoryId): void
 {
     $DB = createConnectionDataBase("pac3_daw");
     $sql = 'INSERT INTO product (Name, Cost, Price, CategoryID)
