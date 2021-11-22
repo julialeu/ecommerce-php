@@ -1,12 +1,17 @@
 <?php
 
+/* Este fichero incluye los ficheros de las clases
+que he creado de User, Product y Category para optimizar el código*/
 include 'Entity/User.php';
 include 'Entity/Product.php';
 include 'Entity/Category.php';
 
+// Si encontramos al usuario, esta función devuelve true
 
 function login($username, $email)
 {
+ /* Si $user no es NULL se llama a la función session_start
+    para iniciar la sesión */
     $user = findUser($username, $email);
     if ($user !== null) {
         session_start();
@@ -16,16 +21,15 @@ function login($username, $email)
 
         return true;
     }
-
     return false;
 }
 
 function findUser($username, $email): ?User
 {
-    // Nos conectamos a la base de datos world
+    // Nos conectamos a la base de datos
     $DB = createConnectionDataBase("pac3_daw");
 
-    // Definimos la consulta para obtener todos los datos de la tabla user.
+    // Definimos la consulta para obtener los datos de la tabla user.
     $sql = "SELECT * FROM user WHERE Email = '$email' AND FullName = '$username'";
 
     // Hacemos la consulta y guardamos el resultado en $result
@@ -42,14 +46,14 @@ function findUser($username, $email): ?User
         $lastAccess = new DateTime($row["LastAccess"]);
 
 
-        $user = new User($id, $email, $username, $enabled, $lastAccess);
+        $user = new User($id, $email, $username, $enabled, $lastAccess, '', false);
 
         return $user;
     }
 
     return null;
 }
-
+//esta es la función para crear la conexión a la base de datos.
 function createConnectionDataBase($database)
 {
     // Datos de conexión
@@ -68,6 +72,8 @@ function createConnectionDataBase($database)
     return $conexion;
 }
 
+/* esta función es para actualizar la fecha de último acceso
+al que le pasamos por parámetro un objeto de la clase User. */
 function updateLastUserAccess(User $user): void
 {
     $DB = createConnectionDataBase("pac3_daw");
@@ -83,6 +89,8 @@ function updateLastUserAccess(User $user): void
  * @param User $user
  * @return string Returns the role of the user
  */
+
+//determinamos el tipo de usuario con esta función
 function getRol(User $user): string
 {
     $DB = createConnectionDataBase("pac3_daw");
@@ -101,7 +109,8 @@ function getRol(User $user): string
     return User::ROLE_REGISTERED;
 }
 
-
+/*esta función devuelve un objeto de tipo User con todos los
+datos recogidos de la consulta sql */
 function getUserFromSession(): User
 {
     $userId = $_SESSION['user_id'];
@@ -121,7 +130,7 @@ function getUserFromSession(): User
     $enabled = (bool)$row['Enabled'];
     $lastAccess = new DateTime($row["LastAccess"]);
 
-    return new User($id, $email, $username, $enabled, $lastAccess);
+    return new User($id, $email, $username, $enabled, $lastAccess, '', false);
 }
 
 /**
@@ -260,25 +269,32 @@ function getProductById($productId): Product
  */
 function getUserList(): array
 {
+    $superAdminUserId = getSuperAdminId();
     $DB = createConnectionDataBase("pac3_daw");
     $sql = "SELECT * FROM user";
     $result = mysqli_query($DB, $sql);
 
+    //var_dump($superAdminUserId);
+
     $users = [];
 
     foreach ($result as $row) {
-        $id = $row["UserID"];
+        $id = (int) $row["UserID"];
         $username = $row["FullName"];
         $email = $row["Email"];
         $lastAccess = new DateTime($row["LastAccess"]);
         $enabled = $row["Enabled"];
+        $isSuperAdmin = ($superAdminUserId === $id);
+       // echo ("User id:  $id  superAdminUserId:  $superAdminUserId");
 
         $user = new User(
             $id,
             $email,
             $username,
             $enabled,
-            $lastAccess
+            $lastAccess,
+            '',
+            $isSuperAdmin
         );
 
         $users[] = $user;
@@ -299,4 +315,35 @@ function editProduct(Product $productToEdit): void
     $sql = "UPDATE product SET Name = '$productName', Cost = $cost, Price = $price, CategoryID = $categoryId WHERE ProductID = $productId";
     var_dump($sql);
     $result = mysqli_query($DB, $sql);
+}
+
+function deleteProduct(int $productId): void
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "DELETE FROM product WHERE ProductID = $productId";
+    //var_dump($sql);
+    $result = mysqli_query($DB, $sql);
+}
+
+function createUser($email, $password, $username, $enabled ): void
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = 'INSERT INTO user (Email, Password, FullName, Enabled, LastAccess)
+            VALUES (\'' . $email . '\',' . $password . ',' . $username . ',' . $enabled . ')';
+
+}
+
+function getSuperAdminId(): int
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "SELECT * FROM setup";
+    $result = mysqli_query($DB, $sql);
+    $row = $result->fetch_assoc();
+    $superAdmin = $row["SuperAdmin"];
+    //var_dump($superAdmin);
+    return (int) $superAdmin;
+
+
+
+
 }

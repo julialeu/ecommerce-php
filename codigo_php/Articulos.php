@@ -51,6 +51,19 @@ if ($orderBy === 'NameAsc') {
     $nameUrl = "Articulos.php?page=1&orderBy=NameAsc";
 }
 
+if ($orderBy === 'PriceAsc') {
+    $priceUrl = "Articulos.php?page=1&orderBy=PriceDesc";
+} else {
+    $priceUrl = "Articulos.php?page=1&orderBy=PriceAsc";
+}
+
+if ($orderBy === 'CostAsc') {
+    $costUrl = "Articulos.php?page=1&orderBy=CostDesc";
+} else {
+    $costUrl = "Articulos.php?page=1&orderBy=CostAsc";
+}
+
+
 ?>
 
 <table>
@@ -60,10 +73,10 @@ if ($orderBy === 'NameAsc') {
         <th><a href="<?php echo($nameUrl); ?>">Nombre</th>
 
         <? if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
-            <th>Coste</th>
+            <th><a href="<?php echo($costUrl); ?>">Coste</a></th>
         <?php } ?>
 
-        <th>Precio</th>
+        <th><a href="<?php echo($priceUrl); ?>">Precio</a></th>
         <? if ($role === User::ROLE_SUPERADMIN) { ?>
             <th>Manejo</th>
         <?php } ?>

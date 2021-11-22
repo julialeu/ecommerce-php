@@ -11,14 +11,25 @@ class User
     private string $username;
     private bool $enabled;
     private DateTime $lastAccess;
+    private ?string $password;
+    private bool $isSuperAdmin;
 
-    public function __construct(int $id, string $email, string $username, bool $enabled, DateTime $lastAccess)
-    {
+    public function __construct(
+        int $id,
+        string $email,
+        string $username,
+        bool $enabled,
+        DateTime $lastAccess,
+        ?string $password,
+        bool $isSuperAdmin
+    ) {
         $this->id = $id;
         $this->email = $email;
         $this->username = $username;
         $this->enabled = $enabled;
         $this->lastAccess = $lastAccess;
+        $this->password = $password;
+        $this->isSuperAdmin = $isSuperAdmin;
 
     }
 
@@ -45,5 +56,15 @@ class User
     public function lastAccess(): DateTime
     {
         return $this->lastAccess;
+    }
+
+    public function password(): ?string
+    {
+        return $this->password;
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->isSuperAdmin;
     }
 }

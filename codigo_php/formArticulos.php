@@ -29,6 +29,8 @@ echo('Método: ' . $methodName . '<br><br>');
 
 $productCreated = false;
 $productEdited = false;
+$productDeleted = false;
+
 
 if ($methodName === 'POST') {
     if ($operation === 'create') {
@@ -62,6 +64,13 @@ if ($methodName === 'POST') {
         editProduct($productToEdit);
         $productEdited = true;
     }
+
+    if ($operation === 'delete') {
+        // Delete the product
+        $productId = $_POST["productId"];
+        deleteProduct($productId);
+        $productDeleted = true;
+    }
 }
 
 if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
@@ -90,7 +99,13 @@ if ($methodName === 'GET') { ?>
 
             foreach ($categoryList as $category) {
                 ?>
-                <option <?php if (isset($product) && $product->categoryId() === $category->categorytId()) {
+                <option
+                    <?php
+                    if ($operation === 'delete') { ?>
+                        disabled
+                    <?php } ?>
+
+                    <?php if (isset($product) && $product->categoryId() === $category->categorytId()) {
                     echo 'selected="selected"';
                 } ?> value="<?= $category->categorytId() ?>"><?php echo $category->name() ?></option>
 
@@ -107,19 +122,30 @@ if ($methodName === 'GET') { ?>
                     echo $product->name();
                 } ?>"
             <?php if ($operation === 'delete') { ?>
-                readonly="readonly";
+                readonly="readonly"
             <?php } ?>
         >
         <br>
         <label for="cost">Coste:</label>
-        <input id="cost" name="cost" value="<?php if (isset($product)) {
-            echo $product->cost();
-        } ?>">
+        <input
+                id="cost"
+                name="cost"
+                value="<?php if (isset($product)) { echo $product->cost();} ?>"
+                <?php if ($operation === 'delete') { ?>
+                    readonly="readonly"
+               <?php } ?>
+        >
         <br>
+
         <label for="price">Precio:</label>
-        <input id="price" name="price" value="<?php if (isset($product)) {
-            echo $product->price();
-        } ?>">
+        <input
+                id="price"
+                name="price"
+                value="<?php if (isset($product)) { echo $product->price(); } ?>"
+                <?php if ($operation === 'delete') { ?>
+                    readonly="readonly"
+                <?php } ?>
+        >
         <br>
 
         <br>
@@ -151,6 +177,10 @@ if ($methodName === 'GET') { ?>
 
 if ($productEdited) {
     echo('Producto editado!');
+}
+
+if ($productDeleted) {
+    echo('Producto eliminado!');
 }
 
 ?>

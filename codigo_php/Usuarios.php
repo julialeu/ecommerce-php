@@ -9,6 +9,10 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($
     exit();
 }
 
+
+echo "<a href=\"formUsuarios.php?operation=create\">
+    Crear nuevo usuario</a>" . "<br><br>";
+
 $userList = getUserList();
 
 ?>
@@ -25,21 +29,46 @@ $userList = getUserList();
 
 
     <?php
+
     foreach ($userList as $user) {
         ?>
         <tr>
+            <td <?php if($user->isSuperAdmin()) { ?>
+                style="color:red" <?php } ?>
+            > <?php echo $user->id() ?></td>
 
-            <td> <?php echo $user->id() ?></td>
-            <td> <?php echo $user->username() ?></td>
-            <td> <?php echo $user->email() ?></td>
-            <td> <?php echo $user->lastAccess()->format('d/m/Y') ?></td>
-            <td> <?php echo (int)$user->enabled() ?></td>
+            <td <?php if($user->isSuperAdmin()) { ?>
+                style="color:red" <?php } ?>
+
+            > <?php echo $user->username() ?>
+                <?php echo(int)$user->isSuperAdmin() ?>
+            </td>
+            <td <?php if($user->isSuperAdmin()) { ?>
+                style="color:red" <?php } ?>
+
+            > <?php echo $user->email() ?></td>
+            <td <?php if($user->isSuperAdmin()) { ?>
+                style="color:red" <?php } ?>
+
+            > <?php echo $user->lastAccess()->format('d/m/Y') ?></td>
+            <td <?php if($user->isSuperAdmin()) { ?>
+                style="color:red" <?php } ?>
+
+            > <?php echo (int)$user->enabled() ?></td>
             <td>
-                <a href="formUsuarios.php?operation=edit&userId=<?php echo $user->id() ?>">✏️</a>
-                <a href="formUsuarios.php?operation=delete&userId=<?php echo $user->id() ?>">❌️</a>
+                <a <?php if($user->isSuperAdmin()) { ?>
+                        href=""
+                        <?php } ?> else <?php { ?>
+
+                        href="formUsuarios.php?operation=edit&userId=<?php echo $user->id() ?> <?php } ?>">✏️</a>
+                <a <?php if($user->isSuperAdmin()) { ?>
+                        href=""
+                        <?php } ?> else <?php { ?>
+                        href="formUsuarios.php?operation=delete&userId=<?php echo $user->id() ?> <?php } ?>">❌️</a>
             </td>
         </tr>
 
     <?php }; ?>
 
 </table>
+
