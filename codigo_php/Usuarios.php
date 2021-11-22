@@ -41,7 +41,6 @@ $userList = getUserList();
                 style="color:red" <?php } ?>
 
             > <?php echo $user->username() ?>
-                <?php echo(int)$user->isSuperAdmin() ?>
             </td>
             <td <?php if($user->isSuperAdmin()) { ?>
                 style="color:red" <?php } ?>

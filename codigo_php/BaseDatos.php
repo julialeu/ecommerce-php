@@ -342,8 +342,25 @@ function getSuperAdminId(): int
     $superAdmin = $row["SuperAdmin"];
     //var_dump($superAdmin);
     return (int) $superAdmin;
+}
 
+function getUserById($id): User
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "SELECT * FROM user WHERE UserID = $id";
+    $result = mysqli_query($DB, $sql);
 
+    $row = $result->fetch_assoc();
+//    var_dump($row);
 
+    $id = $row["UserID"];
+    $name = $row["FullName"];
+    $cost = $row["Cost"];
+    $price = $row["Price"];
+    $categoryId = $row["CategoryID"];
+    $categoryName = '';
 
+    return new User(
+
+    );
 }

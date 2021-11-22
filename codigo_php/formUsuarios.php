@@ -42,27 +42,37 @@ if ($methodName === 'POST') {
         createUser($email, $password, $userName, $enabled );
         $userCreated = true;
     }
-//    if ($operation === 'edit') {
-//        // Edit the user
-//        $userName = $_POST["name"];
-//        $password = $_POST["pwd"];
-//        $email = $_POST["email"];
-//        $lastAccess = $_POST["lastAccess"];
-//        $enabled = $_POST["enabled"];
-//
-//        $userToEdit = new User(
-//            $productId,
-//            $productName,
-//            $cost,
-//            $price,
-//            $categoryId,
-//            ''
-//        );
+    if ($operation === 'edit') {
+        // Edit the user
+        $userName = $_POST["name"];
+        $password = $_POST["pwd"];
+        $email = $_POST["email"];
+        $lastAccess = $_POST["lastAccess"];
+        $enabled = $_POST["enabled"];
 
-//        editProduct($productToEdit);
-//        $productEdited = true;
-//    }
+        $userToEdit = new User(
+            $id,
+            $email,
+            $userName,
+            $enabled,
+            $lastAccess,
+            ''
+        );
 
+        editProduct($userToEdit);
+        $userEdited = true;
+    }
+
+    if ($operation === 'delete') {
+        // Delete the user
+        $id = $_POST["productId"];
+        deleteUser($productId);
+        $productDeleted = true;
+    }
+}
+if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
+    $id = intval($_GET["id"]);
+    $user = getUserById($id);
 }
 
 ?>
