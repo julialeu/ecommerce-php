@@ -39,9 +39,10 @@ if ($methodName === 'POST') {
         $lastAccess = $_POST["lastAccess"];
         $enabled = $_POST["enabled"];
 
-        createUser($email, $password, $userName, $enabled );
+        createUser($email, $password, $userName, $enabled);
         $userCreated = true;
     }
+
     if ($operation === 'edit') {
         // Edit the user
         $userName = $_POST["name"];
@@ -49,33 +50,41 @@ if ($methodName === 'POST') {
         $email = $_POST["email"];
         $lastAccess = $_POST["lastAccess"];
         $enabled = $_POST["enabled"];
+        $id = $_POST["id"];
+        $isSuperAdmin = $_POST["isSuperAdmin"];
 
         $userToEdit = new User(
-            $id,
-            $email,
-            $userName,
-            $enabled,
-            $lastAccess,
-            ''
+                $id,
+                $email,
+                $userName,
+                $enabled,
+                $lastAccess,
+                '',
+                ''
         );
-
-        editProduct($userToEdit);
+        editUser($userToEdit);
         $userEdited = true;
     }
 
     if ($operation === 'delete') {
         // Delete the user
-        $id = $_POST["productId"];
-        deleteUser($productId);
-        $productDeleted = true;
+        $id = $_POST["id"];
+        deleteUser($id);
+        $userDeleted = true;
     }
 }
+
 if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
     $id = intval($_GET["id"]);
     $user = getUserById($id);
 }
 
 ?>
+
+<?php
+
+if ($methodName === 'GET') { ?>
+
 
 <html>
 
@@ -85,8 +94,13 @@ if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete'))
 
 <form method="POST">
 
+    <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
     <label for="id">ID:</label><br>
-    <input type="number" id="id" name="id"><br>
+    <input type="number" id="id" name="id" readonly="readonly" value="<?php if (isset($id)) {
+        echo $user->id();
+        } ?>"><br>
+    <?php } ?>
+
     <label for="name">Nombre:</label><br>
     <input type="text" id="name" name="name"><br>
     <label for="pwd">Contraseña:</label><br>

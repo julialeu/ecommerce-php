@@ -344,23 +344,55 @@ function getSuperAdminId(): int
     return (int) $superAdmin;
 }
 
+function editUser(User $userToEdit): void
+{
+    $username = $userToEdit->name();
+    $email = $userToEdit->email();
+    $password = $userToEdit->password();
+    $lastAccess = $userToEdit->lastAccess();
+    $enabled = $userToEdit->enabled();
+    $id = $userToEdit->id();
+
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "UPDATE user SET Email = $email, Password = $password, FullName = $username, LastAccess = $lastAccess, Enabled = $enabled  WHERE UserID = $id";
+    var_dump($sql);
+    $result = mysqli_query($DB, $sql);
+}
+
+function deleteUser(int $id): void
+{
+    $DB = createConnectionDataBase("pac3_daw");
+    $sql = "DELETE FROM user WHERE UserID = $id";
+    //var_dump($sql);
+    $result = mysqli_query($DB, $sql);
+}
+
 function getUserById($id): User
 {
     $DB = createConnectionDataBase("pac3_daw");
     $sql = "SELECT * FROM user WHERE UserID = $id";
     $result = mysqli_query($DB, $sql);
+//    var_dump($sql);
+//    var_dump($result);
 
     $row = $result->fetch_assoc();
 //    var_dump($row);
 
-    $id = $row["UserID"];
-    $name = $row["FullName"];
-    $cost = $row["Cost"];
-    $price = $row["Price"];
-    $categoryId = $row["CategoryID"];
-    $categoryName = '';
+    $userName = $_POST["name"];
+    $password = '';
+    $email = $_POST["email"];
+    $lastAccess = $_POST["lastAccess"];
+    $enabled = $_POST["enabled"];
+    $id = $_POST["id"];
+    $isSuperAdmin = '';
 
     return new User(
-
+        $id,
+        $email,
+        $userName,
+        $enabled,
+        $lastAccess,
+        '',
+        ''
     );
 }
