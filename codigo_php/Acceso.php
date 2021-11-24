@@ -34,13 +34,3 @@ if($role === User::ROLE_SUPERADMIN){
 
     echo "<a href=\"Index.php\">Volver</a>"."<br>";
 
-var_dump($_SESSION['user_id']);
-var_dump($user->username());
-var_dump($role);
-
-
-
-
-
-
-

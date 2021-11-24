@@ -25,8 +25,6 @@ switch ($operation) {
 
 $methodName = $_SERVER['REQUEST_METHOD'];
 
-echo('Método: ' . $methodName . '<br><br>');
-
 $productCreated = false;
 $productEdited = false;
 $productDeleted = false;
@@ -87,10 +85,15 @@ if ($methodName === 'GET') { ?>
     <form method="post">
         <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
             <label for="id">ID:</label>
-            <input type="number" id="id" name="productId" readonly="readonly" value="<?php if (isset($product)) {
-                echo $product->productId();
-            } ?>"><br>
+            <input
+                    type="number"
+                    id="id"
+                    name="productId"
+                    readonly="readonly"
+                    value="<?php if (isset($product)) { echo $product->productId(); } ?>"
+            >
         <?php } ?>
+        <br>
 
         <label for="category">Categoría:</label>
         <select name="categoryId">
@@ -163,7 +166,6 @@ if ($methodName === 'GET') { ?>
             <?php if ($operation === 'delete') { ?>
                 Eliminar
             <?php } ?>
-
 
         </button>
     </form>

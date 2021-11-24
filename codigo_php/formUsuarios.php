@@ -23,7 +23,6 @@ switch ($operation) {
         break;
 }
 $methodName = $_SERVER['REQUEST_METHOD'];
-echo('Método: ' . $methodName . '<br><br>');
 
 $userCreated = false;
 $userEdited = false;
@@ -36,10 +35,9 @@ if ($methodName === 'POST') {
         $userName = $_POST["name"];
         $password = $_POST["pwd"];
         $email = $_POST["email"];
-        $lastAccess = $_POST["lastAccess"];
-        $enabled = $_POST["enabled"];
+        $isEnabled = $_POST["isEnabled"];
 
-        createUser($email, $password, $userName, $enabled);
+        createUser($email, $password, $userName, $isEnabled);
         $userCreated = true;
     }
 
@@ -49,18 +47,17 @@ if ($methodName === 'POST') {
         $password = $_POST["pwd"];
         $email = $_POST["email"];
         $lastAccess = $_POST["lastAccess"];
-        $enabled = $_POST["enabled"];
+        $enabled = $_POST["isEnabled"];
         $id = $_POST["id"];
-        $isSuperAdmin = $_POST["isSuperAdmin"];
 
         $userToEdit = new User(
-                $id,
-                $email,
-                $userName,
-                $enabled,
-                $lastAccess,
-                '',
-                ''
+            $id,
+            $email,
+            $userName,
+            $enabled,
+            new DateTime($lastAccess),
+            $password,
+            ''
         );
         editUser($userToEdit);
         $userEdited = true;
@@ -75,50 +72,121 @@ if ($methodName === 'POST') {
 }
 
 if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
-    $id = intval($_GET["id"]);
-    $user = getUserById($id);
+    $userId = intval($_GET["userId"]);
+    $user = getUserById($userId);
 }
 
 ?>
-
-<?php
-
-if ($methodName === 'GET') { ?>
-
 
 <html>
 
 <body>
 
-<h2>Tipo de acción</h2>
+<?php
 
-<form method="POST">
+if ($methodName === 'GET') { ?>
 
-    <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
-    <label for="id">ID:</label><br>
-    <input type="number" id="id" name="id" readonly="readonly" value="<?php if (isset($id)) {
-        echo $user->id();
-        } ?>"><br>
-    <?php } ?>
+    <form method="POST">
+        <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
 
-    <label for="name">Nombre:</label><br>
-    <input type="text" id="name" name="name"><br>
-    <label for="pwd">Contraseña:</label><br>
-    <input type="password" id="pwd" name="pwd"><br>
-    <label for="email">Correo:</label><br>
-    <input type="email" id="email" name="email"><br>
-    <label for="lastAccess">Último acceso:</label><br>
-    <input type="date" id="lastAccess" name="lastAccess"><br>
-    <p>Autorizado:</p>
-    <input type="radio" id="authorized" name="enabled">
-    <label for="authorized">Si</label><br>
-    <input type="radio" id="notAuthorized" name="enabled">
-    <label for="notAuthorized">No</label><br><br>
+            <label for="id">ID:</label><br>
+            <input
+                    type="number"
+                    id="id"
+                    name="id"
+                    readonly="readonly"
+                    value="<?php if (isset($user)) {
+                        echo $user->id();
+                    } ?>"
+            >
+        <?php } ?>
+        <br>
 
-</form>
-</body>
-<button type="submit" name="add">Añadir</button>
+        <label for="name">Nombre:</label><br>
+        <input
+                type="text"
+                id="name"
+                name="name"
+                value="<?php if (isset($user)) {
+                    echo $user->username();
+                } ?>"
+        >
+        <br>
+
+        <label for="pwd">Contraseña:</label><br>
+        <input
+                type="password"
+                id="pwd"
+                name="pwd"
+        >
+        <br>
+
+        <label for="email">Correo:</label><br>
+        <input
+                type="email"
+                id="email"
+                name="email"
+                value="<?php if (isset($user)) {
+                    echo $user->email();
+                } ?>"
+        >
+        <br>
+
+        <?php if (in_array($operation, ['delete', 'edit'], true)) { ?>
+        <label for="lastAccess">Último acceso:</label><br>
+        <input
+                type="date"
+                id="lastAccess"
+                name="lastAccess"
+                readonly="readonly"
+                value="<?php if (isset($user)) {
+                    echo $user->lastAccess()->format('Y-m-d');
+                } ?>"
+
+        >
+        <?php }?>
+        <br>
+
+        <p>Autorizado:</p>
+        <label for="isEnabled">Si</label>
+        <input type="radio" name="isEnabled" value="1" checked="true"><br>
+        <label for="isEnabled">No</label>
+        <input type="radio" name="isEnabled" value="0"><br>
+
+        <button type="submit" name="add">
+            <?php if ($operation === 'create') { ?>
+                Añadir
+            <?php } ?>
+
+            <?php if ($operation === 'edit') { ?>
+                Editar
+            <?php } ?>
+
+            <?php if ($operation === 'delete') { ?>
+                Eliminar
+            <?php } ?>
+
+        </button>
+    </form>
+
+<?php } ?>
+
+<?php if ($userCreated) {
+    echo('Usuario creado!');
+}
+
+if ($userEdited) {
+    echo('Usuario editado!');
+}
+
+if ($userDeleted) {
+    echo('Usuario eliminado!');
+}
+
+?>
+
 <a href="Usuarios.php">Volver</a>
 
-</html>
+</body>
 
+</html>

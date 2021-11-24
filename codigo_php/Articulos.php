@@ -16,7 +16,7 @@ if (isset($_GET['page'])) {
 }
 
 if (isset($_GET['orderBy'])) {
-    // Puede ser: CategoryAsc, CategoryDesc
+    // Puede ser: CategoryAsc, CategoryDesc, CostAsc...
     $orderBy = $_GET['orderBy'];
 } else {
     $orderBy = '';
@@ -30,13 +30,18 @@ $productList = getProductListData($pageNumber, $orderBy);
 $user = getUserFromSession();
 
 $role = getRol($user);
-
 if ($role === User::ROLE_SUPERADMIN || $role === User::ROLE_AUTHORIZED) {
 
 
     echo "<a href=\"formArticulos.php?operation=create\">
     Crear nuevo producto</a>" . "<br><br>";
 
+}
+
+if ($orderBy === 'IdAsc') {
+    $idUrl = "Articulos.php?page=1&orderBy=IdDesc";
+} else {
+    $idUrl = "Articulos.php?page=1&orderBy=IdAsc";
 }
 
 if ($orderBy === 'CategoryAsc') {
@@ -68,7 +73,7 @@ if ($orderBy === 'CostAsc') {
 
 <table>
     <tr>
-        <th>ID</th>
+        <th><a href="<?php echo($idUrl); ?>">ID</a></th>
         <th><a href="<?php echo($categoryUrl); ?>">Categoría</a></th>
         <th><a href="<?php echo($nameUrl); ?>">Nombre</th>
 
@@ -80,6 +85,12 @@ if ($orderBy === 'CostAsc') {
         <? if ($role === User::ROLE_SUPERADMIN) { ?>
             <th>Manejo</th>
         <?php } ?>
+
+        <style>
+            .right {
+                text-align: right;
+            }
+        </style>
     </tr>
 
     <?php
@@ -91,10 +102,10 @@ if ($orderBy === 'CostAsc') {
             <td> <?php echo $product->categoryName() ?></td>
             <td> <?php echo $product->name() ?></td>
             <? if (in_array($role, [User::ROLE_SUPERADMIN, User::ROLE_AUTHORIZED])) { ?>
-                <td> <?php echo $product->cost() ?></td>
+                <td class="right"> <?php echo $product->cost() ?></td>
             <?php } ?>
 
-            <td> <?php echo $product->price() ?></td>
+            <td class="right"> <?php echo $product->price() ?></td>
             <? if ($role === User::ROLE_SUPERADMIN) { ?>
                 <td>
                     <a href="formArticulos.php?operation=edit&productId=<?php echo $product->productId() ?>">✏️</a>
