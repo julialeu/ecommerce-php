@@ -2,6 +2,7 @@
 
 require 'BaseDatos.php';
 
+//Mantenemos la sesión activa para el usuario correspondiente.
 session_start();
 
 if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
@@ -9,8 +10,10 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($
     exit();
 }
 
+// Le pasamos el parámetro operación en la url.
 $operation = $_GET['operation'];
 
+//Según el tipo de operación, será crear, editar o eliminar.
 switch ($operation) {
     case 'create':
         echo('<h1>Crear producto</h1>');
@@ -23,12 +26,12 @@ switch ($operation) {
         break;
 }
 
+// Variable para saber si es un POST o GET
 $methodName = $_SERVER['REQUEST_METHOD'];
 
 $productCreated = false;
 $productEdited = false;
 $productDeleted = false;
-
 
 if ($methodName === 'POST') {
     if ($operation === 'create') {
@@ -71,6 +74,8 @@ if ($methodName === 'POST') {
     }
 }
 
+/*Si queremos editar o eliminar debe visualizarse el ID.
+En crear no debe ser así por el ID es "autoincrement" */
 if ($methodName === 'GET' && ($operation === 'edit' || $operation === 'delete')) {
     $productId = intval($_GET["productId"]);
     $product = getProductById($productId);
@@ -154,7 +159,7 @@ if ($methodName === 'GET') { ?>
         <br>
 
         <button type="submit" name="add" value="add">
-
+            <!-- Según el tipo de operación, el botón se mostrará diferente -->
             <?php if ($operation === 'create') { ?>
                 Añadir
             <?php } ?>
@@ -172,7 +177,7 @@ if ($methodName === 'GET') { ?>
 
 <?php } ?>
 
-
+<!-- Mensaje que lanzamos cuando añadimos, eliminamos o editamos -->
 <?php if ($productCreated) {
     echo('Producto creado!');
 }

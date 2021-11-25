@@ -2,6 +2,7 @@
 
 include 'BaseDatos.php';
 
+//Mantenemos la sesión activa
 session_start();
 
 if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
@@ -13,14 +14,30 @@ if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($
 echo "<a href=\"formUsuarios.php?operation=create\">
     Crear nuevo usuario</a>" . "<br><br>";
 
-$userList = getUserList();
+//Método para imprimir la tabla de usuarios
+
+if (isset($_GET['orderBy'])) {
+
+    $orderBy = $_GET['orderBy'];
+} else {
+    $orderBy = '';
+}
+
+$userList = getUserList($orderBy);
+
+
+if ($orderBy === 'NameAsc') {
+    $nameUrl = "Usuarios.php?page=1&orderBy=NameDesc";
+} else {
+    $nameUrl = "Usuarios.php?page=1&orderBy=NameAsc";
+}
 
 ?>
 
 <table>
     <tr>
         <th>ID</th>
-        <th>Nombre</th>
+        <th><a href="<?php echo($nameUrl); ?>">Nombre</a></th>
         <th>Email</th>
         <th>Último acceso</th>
         <th>Enabled</th>
@@ -29,7 +46,9 @@ $userList = getUserList();
 
 
     <?php
-
+    /* En este foreach además de imprimir
+    la lista de usuarios, marcamos en rojo al superAdmin,
+    el cual no puede modificarse ni eliminarse */
     foreach ($userList as $user) {
         ?>
         <tr>

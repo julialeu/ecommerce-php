@@ -135,9 +135,17 @@ function getUserFromSession(): User
 /**
  * @return Product[]
  */
+/*Función para obtener el listado de artículos.
+Hacemos un inner join en el select para que se muestre el nombre de la categoría, no su ID. */
 function getProductListData(int $pageNumber, string $orderBy): array
 {
     $DB = createConnectionDataBase("pac3_daw");
+
+    /* Definimos la constante NUM_PRODUCTS_PER_PAGE como propiedad de la clase Product.
+    La seteamos a 10 para que se muestre 10 productos por página.
+    La variable offset es para que la numeración continúe en cada pagina y no empiece
+    siempre desde 1.*/
+
     $limit = Product::NUM_PRODUCTS_PER_PAGE;
     $offset = ($limit * $pageNumber) - $limit;
 
@@ -145,6 +153,8 @@ function getProductListData(int $pageNumber, string $orderBy): array
                 FROM `product`
                 left join category on product.CategoryID = category.CategoryID';
 
+    /* Utilizamos estos IF's para ordenar en orden ascendente o
+    descendente las columnas de la tabla artículos */
     if ($orderBy === 'IdAsc') {
         $sql = $sql . ' order by product.ProductID asc ';
     }
@@ -291,13 +301,23 @@ function getProductById($productId): Product
  * @return User[]
  * @throws Exception
  */
-function getUserList(): array
+
+/*Método para obtener la lista de usuarios */
+function getUserList(string $orderBy): array
 {
-    $superAdminUserId = getSuperAdminId();
+    $superAdminUserId = getSuperAdminId(); //variable para coger el ID de superAdmin
     $DB = createConnectionDataBase("pac3_daw");
     $sql = "SELECT * FROM user";
-    $result = mysqli_query($DB, $sql);
 
+    if ($orderBy === 'NameAsc') {
+        $sql = $sql . ' order by user.FullName asc ';
+    }
+
+    if ($orderBy === 'NameDesc') {
+        $sql = $sql . ' order by user.FullName desc ';
+    }
+
+    $result = mysqli_query($DB, $sql);
     $users = [];
 
     foreach ($result as $row) {
@@ -353,6 +373,7 @@ function createUser($email, $password, $username, bool $isEnabled): void
     mysqli_query($DB, $sql);
 }
 
+//Método para saber si el usuario es superAdmin en la tabla de usuarios
 function getSuperAdminId(): int
 {
     $DB = createConnectionDataBase("pac3_daw");

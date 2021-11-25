@@ -2,8 +2,10 @@
 
 require 'BaseDatos.php';
 
+//Mantenemos la sesión activa
 session_start();
 
+//Este formulario sigue la misma estructura de funcionamiento que el formulario de artículos.
 if (!isset($_SESSION['user_id']) || !is_numeric($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     header('Location: /pac_desarrollo_servidor/codigo_php/Index.php');
     exit();
@@ -188,5 +190,4 @@ if ($userDeleted) {
 <a href="Usuarios.php">Volver</a>
 
 </body>
-
 </html>

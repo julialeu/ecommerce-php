@@ -17,14 +17,14 @@ $methodName = $_SERVER['REQUEST_METHOD'];
 //si el método es post, se incluye el código de BaseDatos.php
 
 /* definimos las variables $username y $email, su valor son los datos que
-que hemos escrito en el formulario y que se envían con el método post al servidor */
+hemos escrito en el formulario y que se envían con el método POST al servidor */
 if ($methodName === 'POST') {
     include 'BaseDatos.php';
 
     $username = $_POST["username"];
     $email = $_POST["email"];
 
-/* creamos la variable $isValidAccess. Es booleano y suvalor depende de la
+/* creamos la variable $isValidAccess. Es booleano y su valor depende de la
 llamada de la función login. Nos remitimos a la vista BaseDatos.php */
 
     $isValidAccess = login($username, $email);
